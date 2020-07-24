@@ -2,6 +2,19 @@ import React, { useState } from "react";
 import "./App.css";
 
 function App() {
+  // const sentenceObject = {
+  //   sentence: "1st level",
+  //   1: {
+  //     sentence: "2nd level",
+  //     1: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
+  //     2: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
+  //     3: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
+  //     4: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
+  //   },
+  // };
+
+  const [storyObject, setStoryObject] = useState({});
+  // console.log("App -> storyObject", storyObject)
   const [currentInputs, setCurrentInputs] = useState({
     sentence: "",
     option1: "",
@@ -20,12 +33,19 @@ function App() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(e.target);
+    const property = e.target.firstChild.getAttribute("for");
+    let value = e.target.childNodes[1].value;
+    const newState = { ...storyObject, [property]: value };
+    setStoryObject(newState);
+    console.log("handleSubmit -> newState", newState)
   };
 
   return (
     <>
       <div className="App">
+        {/* <h1>Hello world</h1>
+        <p>{sentenceObject[1].sentence}</p>
+        <p>{sentenceObject[1][1].sentence}</p> */}
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="sentence">Main Sentence</label>
