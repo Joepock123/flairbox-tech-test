@@ -2,19 +2,19 @@ import React, { useState } from "react";
 import "./App.css";
 
 function App() {
-  // const sentenceObject = {
-  //   sentence: "1st level",
-  //   1: {
-  //     sentence: "2nd level",
-  //     1: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
-  //     2: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
-  //     3: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
-  //     4: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
-  //   },
-  // };
+  const sentenceObject = {
+    sentence: "1st level",
+    1: {
+      sentence: "2nd level",
+      1: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
+      2: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
+      3: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
+      4: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
+    },
+  };
 
   const [storyObject, setStoryObject] = useState({});
-  // console.log("App -> storyObject", storyObject)
+  console.log("App -> storyObject", storyObject);
   const [currentInputs, setCurrentInputs] = useState({
     sentence: "",
     option1: "",
@@ -37,27 +37,40 @@ function App() {
     let value = e.target.childNodes[1].value;
     const newState = { ...storyObject, [property]: value };
     setStoryObject(newState);
-    console.log("handleSubmit -> newState", newState)
+    console.log("handleSubmit -> newState", newState);
+  };
+
+  const handleClick = (e) => {
+    console.log(e.target);
+    const newState = { ...storyObject, sentence: "" };
+    setStoryObject(newState);
   };
 
   return (
     <>
       <div className="App">
-        {/* <h1>Hello world</h1>
+        <h1>Hello world</h1>
         <p>{sentenceObject[1].sentence}</p>
-        <p>{sentenceObject[1][1].sentence}</p> */}
+        <p>{sentenceObject[1][1].sentence}</p>
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="sentence">Main Sentence</label>
-          <input
-            type="text"
-            id="sentence"
-            name="sentence"
-            onChange={handleChange}
-            required
-          />
-          <input type="submit" />
-        </form>
+        {storyObject.sentence ? (
+          <>
+            <h1>{storyObject.sentence}</h1>
+            <button onClick={handleClick}>Edit Sentence</button>
+          </>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="sentence">Main Sentence</label>
+            <input
+              type="text"
+              id="sentence"
+              name="sentence"
+              onChange={handleChange}
+              required
+            />
+            <input type="submit" />
+          </form>
+        )}
 
         <form onSubmit={handleSubmit}>
           <label htmlFor="option1">option1</label>
