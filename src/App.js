@@ -40,11 +40,37 @@ function App() {
     console.log("handleSubmit -> newState", newState);
   };
 
-  const handleClick = (e) => {
-    console.log(e.target);
+  const handleSentenceClick = (e) => {
+    console.log(e);
     const newState = { ...storyObject, sentence: "" };
     setStoryObject(newState);
   };
+
+  const handleOption1Click = (e) => {
+    console.log(e);
+    const newState = { ...storyObject, option1: "" };
+    setStoryObject(newState);
+  };
+
+  const handleOption2Click = (e) => {
+    console.log(e);
+    const newState = { ...storyObject, option2: "" };
+    setStoryObject(newState);
+  };
+
+  const handleOption3Click = (e) => {
+    console.log(e);
+    const newState = { ...storyObject, option3: "" };
+    setStoryObject(newState);
+  };
+
+  const handleOption4Click = (e) => {
+    console.log(e);
+    const newState = { ...storyObject, option4: "" };
+    setStoryObject(newState);
+  };
+
+
 
   return (
     <>
@@ -56,7 +82,7 @@ function App() {
         {storyObject.sentence ? (
           <>
             <h1>{storyObject.sentence}</h1>
-            <button onClick={handleClick}>Edit Sentence</button>
+            <button onClick={handleSentenceClick}>Edit Sentence</button>
           </>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -72,53 +98,81 @@ function App() {
           </form>
         )}
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="option1">option1</label>
-          <input
-            type="text"
-            id="option1"
-            name="option1"
-            onChange={handleChange}
-            required
-          />
-          <input type="submit" />
-        </form>
+        {storyObject.option1 ? (
+          <>
+            <h1>{storyObject.option1}</h1>
+            <button onClick={handleOption1Click}>Edit Sentence</button>
+          </>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="option1">option1</label>
+            <input
+              type="text"
+              id="option1"
+              name="option1"
+              onChange={handleChange}
+              required
+            />
+            <input type="submit" />
+          </form>
+        )}
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="option2">option2</label>
-          <input
-            type="text"
-            id="option2"
-            name="option2"
-            onChange={handleChange}
-            required
-          />
-          <input type="submit" />
-        </form>
+        {storyObject.option2 ? (
+          <>
+            <h1>{storyObject.option2}</h1>
+            <button onClick={handleOption2Click}>Edit Sentence</button>
+          </>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="option2">option2</label>
+            <input
+              type="text"
+              id="option2"
+              name="option2"
+              onChange={handleChange}
+              required
+            />
+            <input type="submit" />
+          </form>
+        )}
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="option3">option3</label>
-          <input
-            type="text"
-            id="option3"
-            name="option3"
-            onChange={handleChange}
-            required
-          />
-          <input type="submit" />
-        </form>
+        {storyObject.option3 ? (
+          <>
+            <h1>{storyObject.option3}</h1>
+            <button onClick={handleOption3Click}>Edit Sentence</button>
+          </>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="option3">option3</label>
+            <input
+              type="text"
+              id="option3"
+              name="option3"
+              onChange={handleChange}
+              required
+            />
+            <input type="submit" />
+          </form>
+        )}
 
-        <form onSubmit={handleSubmit}>
-          <label htmlFor="option4">option4</label>
-          <input
-            type="text"
-            id="option4"
-            name="option4"
-            onChange={handleChange}
-            required
-          />
-          <input type="submit" />
-        </form>
+        {storyObject.option4 ? (
+          <>
+            <h1>{storyObject.option1}</h1>
+            <button onClick={handleOption4Click}>Edit Sentence</button>
+          </>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="option4">option4</label>
+            <input
+              type="text"
+              id="option4"
+              name="option4"
+              onChange={handleChange}
+              required
+            />
+            <input type="submit" />
+          </form>
+        )}
       </div>
     </>
   );
