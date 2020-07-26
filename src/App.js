@@ -1,181 +1,123 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 
-function App() {
-  const sentenceObject = {
-    sentence: "1st level",
-    1: {
-      sentence: "2nd level",
-      1: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
-      2: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
-      3: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
-      4: { sentence: "3rd level", 1: {}, 2: {}, 3: {}, 4: {} },
-    },
+const _ = require("lodash");
+
+export default function App() {
+  const initialStory = {
+    sentence: "Write a cool story here",
+    children: [],
   };
 
-  const [storyObject, setStoryObject] = useState({});
-  console.log("App -> storyObject", storyObject);
-  const [currentInputs, setCurrentInputs] = useState({
-    sentence: "",
-    option1: "",
-    option2: "",
-    option3: "",
-    option4: "",
-  });
+  const [objectTree, setObjectTree] = useState(initialStory);
+  const [userPath, setUserPath] = useState([]);
+  const [currNode, setCurrNode] = useState(initialStory);
+  const [sentence, setSentence] = useState("");
 
-  const handleChange = (e) => {
-    const property = e.target.name;
-    const value = e.target.value;
-    const newState = { ...currentInputs, [property]: value };
-    console.log("App -> currentInputs", currentInputs);
-    setCurrentInputs(newState);
+  useEffect(() => {
+    const findCurrentLevel = () => {
+      if (userPath.length < 1) setCurrNode(objectTree);
+      else {
+        const currentLevelPath = userPath.join(".");
+        const currentLevel = _.get(
+          objectTree,
+          currentLevelPath,
+          "Error: Please try again"
+        );
+        setCurrNode(currentLevel);
+      }
+    };
+    findCurrentLevel();
+  }, [userPath, objectTree]);
+
+  const handleSentenceChange = (e) => {
+    setSentence(e.target.value);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const property = e.target.firstChild.getAttribute("for");
-    let value = e.target.childNodes[1].value;
-    const newState = { ...storyObject, [property]: value };
-    setStoryObject(newState);
-    console.log("handleSubmit -> newState", newState);
+    const currNodeClone = _.cloneDeep(currNode);
+    const newObject = {
+      sentence: e.target.elements[0].value,
+      children: [],
+    };
+
+    if (currNode.children.length > 3) {
+      alert("You have entered the maximum number of sentences (4)");
+    } else {
+      const objectTreeClone = _.cloneDeep(objectTree);
+      const joinedUserPath = userPath.join(".");
+      const currUserPath =
+        userPath.length < 1 ? "children" : `${joinedUserPath}.children`;
+
+      currNodeClone.children.push(newObject);
+      const newObjectTreeState = _.update(
+        objectTreeClone,
+        currUserPath,
+        () => currNodeClone.children
+      );
+      setObjectTree(newObjectTreeState);
+    }
+    setSentence("");
   };
 
   const handleSentenceClick = (e) => {
-    console.log(e);
-    const newState = { ...storyObject, sentence: "" };
-    setStoryObject(newState);
+    const newPathChoice = `children[${e.target.id}]`;
+    const userPathClone = [...userPath, newPathChoice];
+    setUserPath(userPathClone);
   };
 
-  const handleOption1Click = (e) => {
-    console.log(e);
-    const newState = { ...storyObject, option1: "" };
-    setStoryObject(newState);
+  const handleBackClick = () => {
+    const newUserPathState = userPath.slice(0, userPath.length - 1);
+    setUserPath(newUserPathState);
   };
 
-  const handleOption2Click = (e) => {
-    console.log(e);
-    const newState = { ...storyObject, option2: "" };
-    setStoryObject(newState);
+  const handleBackToStartClick = () => {
+    setUserPath([]);
   };
 
-  const handleOption3Click = (e) => {
-    console.log(e);
-    const newState = { ...storyObject, option3: "" };
-    setStoryObject(newState);
+  const handleReset = () => {
+    setUserPath([]);
+    setObjectTree(initialStory);
   };
 
-  const handleOption4Click = (e) => {
-    console.log(e);
-    const newState = { ...storyObject, option4: "" };
-    setStoryObject(newState);
+  const createChildrenList = () => {
+    if (currNode.children.length > 0) {
+      return currNode.children.map((child, i) => (
+        <button key={i} id={i} onClick={handleSentenceClick}>
+          {child.sentence}
+        </button>
+      ));
+    }
   };
-
-
 
   return (
-    <>
-      <div className="App">
-        <h1>Hello world</h1>
-        <p>{sentenceObject[1].sentence}</p>
-        <p>{sentenceObject[1][1].sentence}</p>
+    <div className="App">
+      <h1>Story Builder</h1>
+      <h2>Current Sentence: {currNode && currNode.sentence}</h2>
+      {currNode && createChildrenList()}
 
-        {storyObject.sentence ? (
-          <>
-            <h1>{storyObject.sentence}</h1>
-            <button onClick={handleSentenceClick}>Edit Sentence</button>
-          </>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="sentence">Main Sentence</label>
-            <input
-              type="text"
-              id="sentence"
-              name="sentence"
-              onChange={handleChange}
-              required
-            />
-            <input type="submit" />
-          </form>
-        )}
-
-        {storyObject.option1 ? (
-          <>
-            <h1>{storyObject.option1}</h1>
-            <button onClick={handleOption1Click}>Edit Sentence</button>
-          </>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="option1">option1</label>
-            <input
-              type="text"
-              id="option1"
-              name="option1"
-              onChange={handleChange}
-              required
-            />
-            <input type="submit" />
-          </form>
-        )}
-
-        {storyObject.option2 ? (
-          <>
-            <h1>{storyObject.option2}</h1>
-            <button onClick={handleOption2Click}>Edit Sentence</button>
-          </>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="option2">option2</label>
-            <input
-              type="text"
-              id="option2"
-              name="option2"
-              onChange={handleChange}
-              required
-            />
-            <input type="submit" />
-          </form>
-        )}
-
-        {storyObject.option3 ? (
-          <>
-            <h1>{storyObject.option3}</h1>
-            <button onClick={handleOption3Click}>Edit Sentence</button>
-          </>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="option3">option3</label>
-            <input
-              type="text"
-              id="option3"
-              name="option3"
-              onChange={handleChange}
-              required
-            />
-            <input type="submit" />
-          </form>
-        )}
-
-        {storyObject.option4 ? (
-          <>
-            <h1>{storyObject.option1}</h1>
-            <button onClick={handleOption4Click}>Edit Sentence</button>
-          </>
-        ) : (
-          <form onSubmit={handleSubmit}>
-            <label htmlFor="option4">option4</label>
-            <input
-              type="text"
-              id="option4"
-              name="option4"
-              onChange={handleChange}
-              required
-            />
-            <input type="submit" />
-          </form>
-        )}
-      </div>
-    </>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="sentence">Enter your sentence here:</label>
+        <input
+          type="text"
+          name="sentence"
+          id="sentence"
+          onChange={handleSentenceChange}
+          value={sentence}
+          required
+        />
+        <input type="submit" value="Submit Sentence" />
+      </form>
+      <button type="button" onClick={handleBackClick}>
+        Back
+      </button>
+      <button type="button" onClick={handleBackToStartClick}>
+        Back To Start
+      </button>
+      <button type="button" onClick={handleReset}>
+        Reset
+      </button>
+    </div>
   );
 }
-
-export default App;
