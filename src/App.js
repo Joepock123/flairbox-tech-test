@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
+import * as SC from "./style";
 
 const _ = require("lodash");
 
 export default function App() {
   const initialStory = {
-    sentence: "Write a cool story here",
+    sentence: "'Every story has a beginning, a middle, and an end. Not necessarily in that order.'",
     children: [],
   };
 
@@ -84,22 +85,25 @@ export default function App() {
   const createChildrenList = () => {
     if (currNode.children.length > 0) {
       return currNode.children.map((child, i) => (
-        <button key={i} id={i} onClick={handleSentenceClick}>
+        <SC.ButtonLink key={i} id={i} onClick={handleSentenceClick}>
           {child.sentence}
-        </button>
+        </SC.ButtonLink>
       ));
     }
   };
 
   return (
-    <div className="App">
-      <h1>Story Builder</h1>
-      <h2>Current Sentence: {currNode && currNode.sentence}</h2>
+    <SC.Main className="App">
+      <h1>The <SC.Span>Flairbox </SC.Span>Story Builder</h1>
+      <SC.P tag>Add up to <SC.Span>4 </SC.Span>sentences after each sentence,</SC.P>
+      <SC.P tag>Select your desired sentence,</SC.P>
+      <SC.P tag>Make sure there's a fairytale ending.</SC.P>
+      <SC.P bold>{currNode && currNode.sentence}</SC.P>
       {currNode && createChildrenList()}
 
-      <form onSubmit={handleSubmit}>
+      <SC.Form onSubmit={handleSubmit}>
         <label htmlFor="sentence">Enter your sentence here:</label>
-        <input
+        <SC.Input
           type="text"
           name="sentence"
           id="sentence"
@@ -107,17 +111,21 @@ export default function App() {
           value={sentence}
           required
         />
-        <input type="submit" value="Submit Sentence" />
-      </form>
-      <button type="button" onClick={handleBackClick}>
-        Back
-      </button>
-      <button type="button" onClick={handleBackToStartClick}>
-        Back To Start
-      </button>
-      <button type="button" onClick={handleReset}>
-        Reset
-      </button>
-    </div>
+        <SC.Button type="submit" primary>
+          Submit
+        </SC.Button>
+        <div>
+          <SC.Button type="button" onClick={handleBackClick}>
+            Back
+          </SC.Button>
+          <SC.Button type="button" onClick={handleBackToStartClick}>
+            Back To Start
+          </SC.Button>
+          <SC.Button type="reset" onClick={handleReset}>
+            Reset
+          </SC.Button>
+        </div>
+      </SC.Form>
+    </SC.Main>
   );
 }
