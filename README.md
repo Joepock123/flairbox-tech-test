@@ -2,6 +2,8 @@
 ## Description 
 A React web application which lets you build you own story by entering and selecting the next part of the story from 4 options.
 
+[Project brief](https://docs.google.com/document/d/1aOIGox_DkBh1sBV-crRdwltAAQTQPN4WXbn2n_bqZHU/edit)
+
 [Deployed to Netlify.](https://flairbox-story-builder.netlify.app/)
 
 ## Acceptability Criteria
