@@ -14,7 +14,6 @@ export default function App() {
   };
 
   const [currNode, setCurrNode] = useState(initialStory);
-  console.log("App -> currNode", currNode);
   const [sentence, setSentence] = useState("");
 
   const handleSentenceChange = (e) => {
