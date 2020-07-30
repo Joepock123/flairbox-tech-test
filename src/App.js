@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import "./App.css";
 import * as SC from "./style";
 
@@ -6,30 +6,16 @@ const _ = require("lodash");
 
 export default function App() {
   const initialStory = {
-    sentence: "'Every story has a beginning, a middle, and an end. Not necessarily in that order.'",
+    parent: null,
+    sentence:
+      "'Every story has a beginning, a middle, and an end. Not necessarily in that order.'",
     children: [],
+    edit: false,
   };
 
-  const [objectTree, setObjectTree] = useState(initialStory);
-  const [userPath, setUserPath] = useState([]);
   const [currNode, setCurrNode] = useState(initialStory);
+  console.log("App -> currNode", currNode);
   const [sentence, setSentence] = useState("");
-
-  useEffect(() => {
-    const findCurrentLevel = () => {
-      if (userPath.length < 1) setCurrNode(objectTree);
-      else {
-        const currentLevelPath = userPath.join(".");
-        const currentLevel = _.get(
-          objectTree,
-          currentLevelPath,
-          "Error: Please try again"
-        );
-        setCurrNode(currentLevel);
-      }
-    };
-    findCurrentLevel();
-  }, [userPath, objectTree]);
 
   const handleSentenceChange = (e) => {
     setSentence(e.target.value);
@@ -39,63 +25,90 @@ export default function App() {
     e.preventDefault();
     const currNodeClone = _.cloneDeep(currNode);
     const newObject = {
+      parent: currNodeClone,
       sentence: e.target.elements[0].value,
       children: [],
+      edit: false,
     };
 
     if (currNode.children.length > 3) {
       alert("You have entered the maximum number of sentences (4)");
     } else {
-      const objectTreeClone = _.cloneDeep(objectTree);
-      const joinedUserPath = userPath.join(".");
-      const currUserPath =
-        userPath.length < 1 ? "children" : `${joinedUserPath}.children`;
-
       currNodeClone.children.push(newObject);
-      const newObjectTreeState = _.update(
-        objectTreeClone,
-        currUserPath,
-        () => currNodeClone.children
-      );
-      setObjectTree(newObjectTreeState);
+      setCurrNode(currNodeClone);
     }
     setSentence("");
   };
 
-  const handleSentenceClick = (e) => {
-    const newPathChoice = `children[${e.target.id}]`;
-    const userPathClone = [...userPath, newPathChoice];
-    setUserPath(userPathClone);
+  const handleSentenceClick = (i) => {
+    const currNodeClone = _.cloneDeep(currNode);
+    const childNode = currNodeClone.children[i];
+    setCurrNode(childNode);
   };
 
   const handleBackClick = () => {
-    const newUserPathState = userPath.slice(0, userPath.length - 1);
-    setUserPath(newUserPathState);
+    if (currNode.parent === null) return;
+    const currNodeClone = _.cloneDeep(currNode);
+    const parentNode = currNodeClone.parent;
+    setCurrNode(parentNode);
   };
 
-  const handleBackToStartClick = () => {
-    setUserPath([]);
+  const handleBackToStartClick = (currNode) => {
+    let currNodeClone = _.cloneDeep(currNode);
+    while (currNodeClone.parent !== null) {
+      currNodeClone = currNodeClone.parent;
+    }
+    setCurrNode(currNodeClone);
   };
 
   const handleReset = () => {
-    setUserPath([]);
-    setObjectTree(initialStory);
+    setCurrNode(initialStory);
+  };
+
+  const handleSentenceEdit = (i) => {
+    const currNodeClone = _.cloneDeep(currNode);
+    let childToChange = currNodeClone.children[i];
+    currNodeClone.children[i].edit = true;
+    setCurrNode(currNodeClone);
+  };
+
+  const handleSentenceEditSubmission = (e, i) => {
+    e.preventDefault();
+    const newSentenceValue = e.target.elements[0].value;
+    const currNodeClone = _.cloneDeep(currNode);
+    currNodeClone.children[i].edit = false;
+    currNodeClone.children[i].sentence = newSentenceValue;
+    setCurrNode(currNodeClone);
   };
 
   const createChildrenList = () => {
     if (currNode.children.length > 0) {
-      return currNode.children.map((child, i) => (
-        <SC.ButtonLink key={i} id={i} onClick={handleSentenceClick}>
-          {child.sentence}
-        </SC.ButtonLink>
-      ));
+      return currNode.children.map((child, i) =>
+        !child.edit ? (
+          <div key={i}>
+            <SC.ButtonLink onClick={() => handleSentenceClick(i)}>
+              {child.sentence}
+            </SC.ButtonLink>
+            <button onClick={() => handleSentenceEdit(i)}>Edit</button>
+          </div>
+        ) : (
+          <form onSubmit={(e) => handleSentenceEditSubmission(e, i)}>
+            <input type="text"></input>
+            <button type="submit">Save</button>
+          </form>
+        )
+      );
     }
   };
 
   return (
     <SC.Main className="App">
-      <h1>The <SC.Span>Flairbox </SC.Span>Story Builder</h1>
-      <SC.P tag>Add up to <SC.Span>4 </SC.Span>sentences after each sentence,</SC.P>
+      <h1>
+        The <SC.Span>Flairbox </SC.Span>Story Builder
+      </h1>
+      <SC.P tag>
+        Add up to <SC.Span>4 </SC.Span>sentences after each sentence,
+      </SC.P>
       <SC.P tag>Select your desired sentence,</SC.P>
       <SC.P tag>Make sure there's a fairytale ending.</SC.P>
       <SC.P bold>{currNode && currNode.sentence}</SC.P>
@@ -118,7 +131,10 @@ export default function App() {
           <SC.Button type="button" onClick={handleBackClick}>
             Back
           </SC.Button>
-          <SC.Button type="button" onClick={handleBackToStartClick}>
+          <SC.Button
+            type="button"
+            onClick={() => handleBackToStartClick(currNode)}
+          >
             Back To Start
           </SC.Button>
           <SC.Button type="reset" onClick={handleReset}>
